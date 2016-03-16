@@ -4,25 +4,26 @@ import React, {
   AppRegistry,
   Component,
   StyleSheet,
-  Text
+  Text,
+  NavigatorIOS
 } from 'react-native';
+import SearchPage from './SearchPage';
 
 const styles = StyleSheet.create({
-  text: {
-    color: '#555',
-    backgroundColor: '#eee',
-    fontSize: 24,
-    margin: 40,
-    padding: 15
+  container: {
+    flex: 1
   }
 });
 
 class PropertyFinderApp extends Component {
   render() {
     return (
-      <Text style={styles.text}>
-        Hello World!
-      </Text>
+      <NavigatorIOS
+        style={styles.container}
+        initialRoute={{
+          title: 'Property Finder',
+          component: SearchPage
+        }} />
     );
   }
 }
