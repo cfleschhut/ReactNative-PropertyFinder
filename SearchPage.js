@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   }
 });
 
-function urlForQueryAndPage(key, value, pageNumber) {
+let urlForQueryAndPage = (key, value, pageNumber) => {
   let data = {
     country: 'uk',
     pretty: '1',
@@ -80,16 +80,17 @@ function urlForQueryAndPage(key, value, pageNumber) {
   return 'http://api.nestoria.co.uk/api?' + queryString;
 }
 
-class SearchPage extends Component {
+export default class SearchPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       searchString: 'London',
-      isLoading: false
+      isLoading: false,
+      message: ''
     };
   }
 
-  handleSearchTextChange = (ev) => {
+  onSearchTextChanged = (ev) => {
     this.setState({
       searchString: ev.nativeEvent.text
     });
@@ -100,10 +101,34 @@ class SearchPage extends Component {
     this.setState({
       isLoading: true
     });
+
+    fetch(query)
+      .then(response => response.json())
+      .then(json => this._handleResponse(json.response))
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          message: error
+        });
+      });
+  }
+
+  _handleResponse(response) {
+    console.log(response);
+    this.setState({
+      isLoading: false,
+      message: ''
+    });
+
+    if (response.application_response_code.substr(0, 1) === '1') {
+      console.log(`Properties found: ${response.listings.length}`);
+    } else {
+      this.setState({message: 'Unknown location, please try again.'});
+    }
   }
 
   onSearchPressed = (ev) => {
-    var query = urlForQueryAndPage('place_name', this.state.searchString, 1);
+    let query = urlForQueryAndPage('place_name', this.state.searchString, 1);
     this._executeQuery(query);
   };
 
@@ -124,7 +149,7 @@ class SearchPage extends Component {
           <TextInput style={styles.searchInput}
             placeholder='Search via name or postcode'
             value={this.state.searchString}
-            onChange={this.handleSearchTextChange} />
+            onChange={this.onSearchTextChanged} />
           <TouchableHighlight style={styles.button}
             underlayColor='#99d9f4'
             onPress={this.onSearchPressed}>
@@ -137,9 +162,8 @@ class SearchPage extends Component {
         </TouchableHighlight>
         <Image source={require('./Resources/house.png')} style={styles.image} />
         {spinner}
+        <Text style={styles.description}>{this.state.message}</Text>
       </View>
     );
   }
 }
-
-export default SearchPage;
