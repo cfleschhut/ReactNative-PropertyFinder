@@ -10,6 +10,7 @@ import {
   TouchableHighlight,
   ActivityIndicatorIOS
 } from 'react-native';
+import SearchResults from './SearchResults';
 
 const styles = StyleSheet.create({
   container: {
@@ -114,7 +115,15 @@ export default class SearchPage extends Component {
   }
 
   _handleResponse(response) {
-    console.log(response);
+    // console.log(response);
+    this.props.navigator.push({
+      title: 'Results',
+      component: SearchResults,
+      passProps: {
+        listings: response.listings
+      }
+    });
+
     this.setState({
       isLoading: false,
       message: ''
