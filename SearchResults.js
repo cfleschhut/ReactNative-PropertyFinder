@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   ListView
 } from 'react-native';
+import PropertyView from './PropertyView';
 
 const styles = StyleSheet.create({
   rowContainer: {
@@ -51,9 +52,22 @@ export default class SearchResults extends Component {
     };
   }
 
-  renderRow(rowData) {
+  rowPressed(rowIndex) {
+    let property = this.props.listings[rowIndex];
+
+    this.props.navigator.push({
+      title: 'Property',
+      component: PropertyView,
+      passProps: {
+        property: property
+      }
+    });
+  }
+
+  renderRow(rowData, sectionID, rowID) {
     return (
-      <TouchableHighlight underlayColor='#dddddd'>
+      <TouchableHighlight onPress={() => this.rowPressed(rowID)}
+        underlayColor='#dddddd'>
         <View>
           <View style={styles.rowContainer}>
             <Image style={styles.thumb} source={{uri: rowData.img_url}} />
@@ -76,7 +90,7 @@ export default class SearchResults extends Component {
   render() {
     return (
       <ListView dataSource={this.state.dataSource}
-        renderRow={this.renderRow} />
+        renderRow={this.renderRow.bind(this)} />
     );
   }
 }
